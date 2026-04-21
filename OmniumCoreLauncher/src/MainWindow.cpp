@@ -1,11 +1,13 @@
 #include "MainWindow.h"
 
 #include "ApiClient.h"
+#include "AssetPaths.h"
 #include "FlowLayout.h"
 #include "GameCard.h"
 #include "GameDetailsDialog.h"
 #include "GameScanner.h"
 #include "PlatformIcons.h"
+#include "SoundManager.h"
 #include "Updater.h"
 
 #include <QAction>
@@ -13,7 +15,9 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QHBoxLayout>
+#include <QIcon>
 #include <QLabel>
+#include <QPixmap>
 #include <QLineEdit>
 #include <QMenuBar>
 #include <QMessageBox>
@@ -37,6 +41,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     m_scanner = new GameScanner(this);
     m_api     = new ApiClient(this);
     m_updater = new Updater(this);
+    m_sounds  = new SoundManager(this);
 
     connect(m_api,     &ApiClient::gameMetadataReady, this, &MainWindow::onMetadataReady);
     connect(m_api,     &ApiClient::coverReady,        this, &MainWindow::onCoverReady);
@@ -129,9 +134,23 @@ void MainWindow::buildSidebar(QWidget* container) {
     lay->setContentsMargins(20, 24, 20, 24);
     lay->setSpacing(16);
 
-    auto* logo = new QLabel(QStringLiteral("OMNIUM<br><span style='color:#7c5cff'>CORE</span>"), container);
+    auto* logo = new QLabel(container);
     logo->setObjectName(QStringLiteral("Logo"));
-    logo->setTextFormat(Qt::RichText);
+    logo->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    const QString logoPath = AssetPaths::resolve(QStringLiteral("images/logo.svg"));
+    if (!logoPath.isEmpty()) {
+        QPixmap pix(logoPath);
+        if (!pix.isNull()) {
+            logo->setPixmap(pix.scaledToHeight(48, Qt::SmoothTransformation));
+        } else {
+            // SVG: render it via QIcon at the desired pixel size
+            logo->setPixmap(QIcon(logoPath).pixmap(QSize(180, 48)));
+        }
+    } else {
+        logo->setTextFormat(Qt::RichText);
+        logo->setText(QStringLiteral(
+            "OMNIUM<br><span style='color:#7c5cff'>CORE</span>"));
+    }
     lay->addWidget(logo);
 
     auto* scanBtn = new QPushButton(tr("⟳  Scan Library"), container);
@@ -255,6 +274,17 @@ void MainWindow::rebuildGrid() {
         auto* card = new GameCard(g, m_grid);
         connect(card, &GameCard::clicked,         this, &MainWindow::onCardClicked);
         connect(card, &GameCard::launchRequested, this, &MainWindow::onLaunchGame);
+
+        // Show real cover if cached, otherwise the placeholder from assets/.
+        if (!g.coverLocalPath.isEmpty()) {
+            card->setCover(QPixmap(g.coverLocalPath));
+        } else {
+            const QString ph = AssetPaths::resolve(
+                QStringLiteral("images/cover_placeholder.svg"));
+            if (!ph.isEmpty())
+                card->setCover(QIcon(ph).pixmap(QSize(240, 320)));
+        }
+
         m_gridLayout->addWidget(card);
         m_cardsById.insert(g.id, card);
     }
@@ -264,6 +294,7 @@ void MainWindow::onSearchTextChanged(const QString&) { rebuildGrid(); }
 void MainWindow::onPlatformFilterChanged(int)        { rebuildGrid(); }
 
 void MainWindow::onCardClicked(const Game& game) {
+    m_sounds->playClick();
     auto* dlg = new GameDetailsDialog(game, this);
     if (!game.coverLocalPath.isEmpty())
         dlg->setCover(QPixmap(game.coverLocalPath));
@@ -283,6 +314,7 @@ void MainWindow::onLaunchGame(const Game& game) {
         QMessageBox::warning(this, tr("Launch failed"),
             tr("Could not start %1.").arg(game.title));
     } else {
+        m_sounds->playLaunch();
         statusBar()->showMessage(tr("Launched %1").arg(game.title), 3000);
     }
 }
@@ -319,6 +351,7 @@ void MainWindow::onCheckForUpdates() {
 void MainWindow::onUpdateAvailable(const QString& tag,
                                    const QString& url,
                                    const QString& notes) {
+    m_sounds->playNotification();
     QMessageBox box(this);
     box.setWindowTitle(tr("Update available"));
     box.setIcon(QMessageBox::Information);

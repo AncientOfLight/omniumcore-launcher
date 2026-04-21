@@ -1,9 +1,9 @@
 #include <QApplication>
 #include <QFile>
-#include <QFontDatabase>
+#include <QIcon>
 #include <QTextStream>
-#include <QDir>
 
+#include "AssetPaths.h"
 #include "MainWindow.h"
 
 static void loadStylesheet(QApplication& app) {
@@ -21,6 +21,12 @@ int main(int argc, char* argv[]) {
     QApplication::setApplicationVersion(QStringLiteral(OMNIUM_VERSION));
     QApplication::setOrganizationName(QStringLiteral("OmniumCore"));
     QApplication::setOrganizationDomain(QStringLiteral("omniumcore.app"));
+
+    // App icon — falls back to embedded resource if user hasn't replaced the file.
+    const QString iconPath = omnium::AssetPaths::resolve(
+        QStringLiteral("icons/app_icon.svg"));
+    if (!iconPath.isEmpty())
+        QApplication::setWindowIcon(QIcon(iconPath));
 
     loadStylesheet(app);
 

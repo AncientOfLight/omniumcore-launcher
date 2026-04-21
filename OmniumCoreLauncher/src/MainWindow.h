@@ -44,9 +44,10 @@ private:
     void buildHeader(QWidget* container);
     void rebuildGrid();
 
-    GameScanner* m_scanner = nullptr;
-    ApiClient*   m_api     = nullptr;
-    Updater*     m_updater = nullptr;
+    GameScanner*  m_scanner = nullptr;
+    ApiClient*    m_api     = nullptr;
+    Updater*      m_updater = nullptr;
+    class SoundManager* m_sounds = nullptr;
 
     // UI
     QWidget*     m_grid       = nullptr;

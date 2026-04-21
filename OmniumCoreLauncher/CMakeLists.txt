@@ -15,7 +15,7 @@ set(CMAKE_AUTOUIC ON)
 
 # Adjust CMAKE_PREFIX_PATH to your local Qt 6 install, e.g.
 # -DCMAKE_PREFIX_PATH="C:/Qt/6.7.0/msvc2019_64"
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network Multimedia Svg)
 
 qt_standard_project_setup()
 
@@ -37,6 +37,10 @@ set(PROJECT_SOURCES
     src/Updater.h
     src/PlatformIcons.cpp
     src/PlatformIcons.h
+    src/AssetPaths.cpp
+    src/AssetPaths.h
+    src/SoundManager.cpp
+    src/SoundManager.h
     src/models/Game.h
     resources/resources.qrc
 )
@@ -53,6 +57,8 @@ target_link_libraries(OmniumCoreLauncher
         Qt6::Gui
         Qt6::Widgets
         Qt6::Network
+        Qt6::Multimedia
+        Qt6::Svg
 )
 
 if(WIN32)
@@ -75,4 +81,17 @@ set_target_properties(OmniumCoreLauncher PROPERTIES
 
 install(TARGETS OmniumCoreLauncher
     RUNTIME DESTINATION bin
+)
+
+# Ship the assets folder next to the .exe so users can swap files
+# (logo, sounds) without recompiling.
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/assets
+        DESTINATION bin
+)
+
+# Also mirror assets next to the dev build so the running .exe finds them.
+add_custom_command(TARGET OmniumCoreLauncher POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/assets
+            $<TARGET_FILE_DIR:OmniumCoreLauncher>/assets
 )

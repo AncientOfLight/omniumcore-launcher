@@ -13,4 +13,12 @@
         <file alias="riot.svg">icons/riot.svg</file>
         <file alias="unknown.svg">icons/unknown.svg</file>
     </qresource>
+    <qresource prefix="/assets">
+        <file alias="images/logo.svg">../assets/images/logo.svg</file>
+        <file alias="images/cover_placeholder.svg">../assets/images/cover_placeholder.svg</file>
+        <file alias="icons/app_icon.svg">../assets/icons/app_icon.svg</file>
+        <file alias="sounds/click.wav">../assets/sounds/click.wav</file>
+        <file alias="sounds/launch.wav">../assets/sounds/launch.wav</file>
+        <file alias="sounds/notification.wav">../assets/sounds/notification.wav</file>
+    </qresource>
 </RCC>
