@@ -1,30 +1,13 @@
-name: Build OmniumCore Windows
+name: Diagnostico de Carpetas
 on: [push]
 jobs:
-  build:
+  debug:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v3
-        with:
-          version: '6.5.*'
-          
-      - name: List Files and Build
+      - name: Listar todo el contenido
         run: |
-          # 1. Ver qué carpetas hay (para diagnóstico)
-          dir
-          
-          # 2. Entrar a la subcarpeta que Replit suele crear
-          # Cambiamos al directorio del proyecto y compilamos
-          cmake -B build -S . -DCMAKE_PREFIX_PATH=${{ env.Qt6_DIR }}
-          cmake --build build --config Release
-          
-      - name: Upload EXE
-        uses: actions/upload-artifact@v4
-        with:
-          name: OmniumCore-Launcher
-          path: |
-            build/Release/*.exe
-            **/Release/*.exe
+          echo "ESTOY EN ESTA CARPETA:"
+          pwd
+          echo "ESTO ES LO QUE VEO AQUÍ:"
+          ls -R
