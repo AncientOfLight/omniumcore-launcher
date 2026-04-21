@@ -5,17 +5,26 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
           version: '6.5.3'
-          modules: 'qtmultimedia qtconcurrent'
-      - name: Build
+          # Eliminamos la línea de "modules" que causaba el error
+
+      - name: Build OmniumCore
         run: |
+          # Buscamos la carpeta del proyecto
           $dir = Get-ChildItem -Filter CMakeLists.txt -Recurse | Select-Object -First 1 -ExpandProperty DirectoryName
           cd "$dir"
-          cmake -B build -S . -DCMAKE_PREFIX_PATH=${{ env.Qt6_DIR }}
-          cmake --build build --config Release
+          
+          # Limpiamos y configuramos
+          if (Test-Path build) { Remove-Item -Recurse -Force build }
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_PREFIX_PATH=${{ env.Qt6_DIR }}
+          cmake --build . --config Release
+
       - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
