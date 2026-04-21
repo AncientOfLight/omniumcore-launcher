@@ -1,13 +1,23 @@
-name: Diagnostico de Carpetas
+name: Build OmniumCore Windows
 on: [push]
 jobs:
-  debug:
+  build:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Listar todo el contenido
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: '6.5.*'
+      - name: Build
         run: |
-          echo "ESTOY EN ESTA CARPETA:"
-          pwd
-          echo "ESTO ES LO QUE VEO AQUÍ:"
-          ls -R
+          cd OmniumCoreLauncher
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_PREFIX_PATH=${{ env.Qt6_DIR }}
+          cmake --build . --config Release
+      - name: Upload EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: OmniumCore-Launcher
+          path: OmniumCoreLauncher/build/Release/*.exe
