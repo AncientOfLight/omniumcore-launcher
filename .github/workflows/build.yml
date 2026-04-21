@@ -5,18 +5,27 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
           version: '6.5.3'
-          # Instalamos los paquetes de internet y sonido
-          modules: 'qtmultimedia qtnetwork qtconcurrent'
-      - name: Build
+          # Quitamos la línea de modules que daba error
+          host: 'windows'
+          target: 'desktop'
+          arch: 'win64_msvc2019_64'
+
+      - name: Build OmniumCore
+        shell: pwsh
         run: |
-          $dir = Get-ChildItem -Filter CMakeLists.txt -Recurse | Select-Object -First 1 -ExpandProperty DirectoryName
+          $cmakeFile = Get-ChildItem -Filter CMakeLists.txt -Recurse | Select-Object -First 1
+          $dir = $cmakeFile.DirectoryName
           cd "$dir"
-          cmake -B build -S . -DCMAKE_PREFIX_PATH=${{ env.Qt6_DIR }}
+          if (Test-Path build) { Remove-Item -Recurse -Force build }
+          # Usamos la ruta de Qt que el robot configuró
+          cmake -B build -S . -DCMAKE_PREFIX_PATH="$env:Qt6_DIR"
           cmake --build build --config Release
+          
       - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
