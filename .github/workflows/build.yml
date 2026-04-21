@@ -10,20 +10,17 @@ jobs:
         uses: jurplel/install-qt-action@v3
         with:
           version: '6.5.3'
-          # Eliminamos la línea de "modules" que causaba el error
+          # No pedimos nada extra para que no use el Python del sistema que da error
 
       - name: Build OmniumCore
+        shell: pwsh
         run: |
-          # Buscamos la carpeta del proyecto
-          $dir = Get-ChildItem -Filter CMakeLists.txt -Recurse | Select-Object -First 1 -ExpandProperty DirectoryName
+          $cmakeFile = Get-ChildItem -Filter CMakeLists.txt -Recurse | Select-Object -First 1
+          if (-not $cmakeFile) { throw "No se encontró CMakeLists.txt" }
+          $dir = $cmakeFile.DirectoryName
           cd "$dir"
-          
-          # Limpiamos y configuramos
-          if (Test-Path build) { Remove-Item -Recurse -Force build }
-          mkdir build
-          cd build
-          cmake .. -DCMAKE_PREFIX_PATH=${{ env.Qt6_DIR }}
-          cmake --build . --config Release
+          cmake -B build -S . -DCMAKE_PREFIX_PATH="$env:Qt6_DIR"
+          cmake --build build --config Release
 
       - name: Upload EXE
         uses: actions/upload-artifact@v4
