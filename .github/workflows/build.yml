@@ -5,16 +5,27 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
           version: '6.5.*'
-      - name: Build
+          
+      - name: Find CMakeLists and Build
         run: |
-          cmake -B build -S . -DCMAKE_PREFIX_PATH=${{ env.Qt6_DIR }}
+          # Este comando busca el archivo si está en una subcarpeta
+          $cmakePath = Get-ChildItem -Filter CMakeLists.txt -Recurse | Select-Object -First 1 -ExpandProperty DirectoryName
+          if (-not $cmakePath) { throw "No se encontró CMakeLists.txt en ninguna carpeta" }
+          Write-Host "Archivo encontrado en: $cmakePath"
+          
+          mkdir build
+          cmake -B build -S $cmakePath -DCMAKE_PREFIX_PATH=${{ env.Qt6_DIR }}
           cmake --build build --config Release
+          
       - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
           name: OmniumCore-Launcher
-          path: build/Release/*.exe
+          path: |
+            **/Release/*.exe
+            **/build/*.exe
