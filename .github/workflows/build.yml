@@ -5,25 +5,17 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
-          version: '6.5.*'
-          # Aquí le decimos que instale el módulo de sonido que faltaba
-          modules: 'qtmultimedia'
-          
-      - name: Auto-Detect and Build
+          version: '6.5.3'
+          modules: 'qtmultimedia qtconcurrent'
+      - name: Build
         run: |
           $dir = Get-ChildItem -Filter CMakeLists.txt -Recurse | Select-Object -First 1 -ExpandProperty DirectoryName
-          Write-Host "Proyecto encontrado en: $dir"
           cd "$dir"
-          if (Test-Path build) { Remove-Item -Recurse -Force build }
-          mkdir build
-          cd build
-          cmake .. -DCMAKE_PREFIX_PATH=${{ env.Qt6_DIR }}
-          cmake --build . --config Release
-          
+          cmake -B build -S . -DCMAKE_PREFIX_PATH=${{ env.Qt6_DIR }}
+          cmake --build build --config Release
       - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
