@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/styles">
+        <file alias="midnight.qss">styles/midnight.qss</file>
+    </qresource>
+    <qresource prefix="/icons">
+        <file alias="steam.svg">icons/steam.svg</file>
+        <file alias="ea.svg">icons/ea.svg</file>
+        <file alias="epic.svg">icons/epic.svg</file>
+        <file alias="microsoft.svg">icons/microsoft.svg</file>
+        <file alias="ubisoft.svg">icons/ubisoft.svg</file>
+        <file alias="gog.svg">icons/gog.svg</file>
+        <file alias="amazon.svg">icons/amazon.svg</file>
+        <file alias="riot.svg">icons/riot.svg</file>
+        <file alias="unknown.svg">icons/unknown.svg</file>
+    </qresource>
+</RCC>
