@@ -5,19 +5,27 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
           version: '6.5.*'
-      - name: Build
+          # Aquí le decimos que instale el módulo de sonido que faltaba
+          modules: 'qtmultimedia'
+          
+      - name: Auto-Detect and Build
         run: |
-          cd OmniumCoreLauncher
+          $dir = Get-ChildItem -Filter CMakeLists.txt -Recurse | Select-Object -First 1 -ExpandProperty DirectoryName
+          Write-Host "Proyecto encontrado en: $dir"
+          cd "$dir"
+          if (Test-Path build) { Remove-Item -Recurse -Force build }
           mkdir build
           cd build
           cmake .. -DCMAKE_PREFIX_PATH=${{ env.Qt6_DIR }}
           cmake --build . --config Release
+          
       - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
           name: OmniumCore-Launcher
-          path: OmniumCoreLauncher/build/Release/*.exe
+          path: "**/build/Release/*.exe"
