@@ -16,8 +16,7 @@ jobs:
         with:
           version: '6.5.3'
           arch: 'win64_msvc2019_64'
-          # Quitamos qtnetwork porque ya viene por defecto
-          modules: 'qtmultimedia' 
+          modules: 'qtmultimedia'
 
       - name: Build OmniumCore
         shell: pwsh
@@ -29,8 +28,12 @@ jobs:
           cmake -B build -S . -DCMAKE_PREFIX_PATH="$env:Qt6_DIR"
           cmake --build build --config Release
           
-      - name: Upload EXE
+          # ESTO ES LO NUEVO: Copia las DLLs necesarias a la carpeta del EXE
+          cd build/Release
+          & "$env:Qt6_DIR/bin/windeployqt.exe" --qmldir ../../ --no-translations --compiler-runtime OmniumCoreLauncher.exe
+
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: OmniumCore-Launcher
-          path: "**/build/Release/*.exe"
+          name: OmniumCore-Launcher-Full
+          path: "**/build/Release/"
