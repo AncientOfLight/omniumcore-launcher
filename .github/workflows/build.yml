@@ -6,14 +6,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Qt
+          - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
           version: '6.5.3'
-          # Quitamos la línea de modules que daba error
-          host: 'windows'
-          target: 'desktop'
-          arch: 'win64_msvc2019_64'
+          # ... mantén lo que ya tengas aquí ...
+          modules: 'qtmultimedia qtnetwork' # <--- ASEGÚRATE DE QUE DIGA ESTO
 
       - name: Build OmniumCore
         shell: pwsh
