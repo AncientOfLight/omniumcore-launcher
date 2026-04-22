@@ -7,7 +7,6 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-# Buscamos Qt6 y sus módulos
 find_package(Qt6 REQUIRED COMPONENTS 
     Widgets 
     Gui 
@@ -17,19 +16,23 @@ find_package(Qt6 REQUIRED COMPONENTS
     Multimedia
 )
 
-# Buscamos TODOS los archivos .cpp y .h dentro de src y sus subcarpetas
-file(GLOB_RECURSE SOURCES "src/*.cpp" "*.cpp")
-file(GLOB_RECURSE HEADERS "src/*.h" "*.h")
+# 1. Aquí está el cambio: solo buscamos dentro de la carpeta 'src' 
+# para no agarrar archivos basura de carpetas temporales.
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+file(GLOB_RECURSE HEADERS "src/*.h")
 
-# Creamos el ejecutable
+# 2. Si tu main.cpp está afuera de 'src', lo añadimos manualmente. 
+# Si ya está dentro de 'src', CMake lo ignorará si es un duplicado.
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp")
+    list(APPEND SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp")
+endif()
+
 qt_add_executable(OmniumCoreLauncher ${SOURCES} ${HEADERS} resources/resources.qrc)
 
-# Arreglamos el error de OMNIUM_VERSION
 target_compile_definitions(OmniumCoreLauncher PRIVATE 
     OMNIUM_VERSION="${PROJECT_VERSION}"
 )
 
-# Enlazamos las librerías
 target_link_libraries(OmniumCoreLauncher PRIVATE 
     Qt6::Widgets 
     Qt6::Gui 
