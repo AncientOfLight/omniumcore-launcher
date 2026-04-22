@@ -1,3 +1,4 @@
+#include <QStyle>
 #include "GameCard.h"
 #include "PlatformIcons.h"
 
