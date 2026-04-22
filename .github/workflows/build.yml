@@ -6,12 +6,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-          - name: Install Qt
+      - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
           version: '6.5.3'
-          # ... mantén lo que ya tengas aquí ...
-          modules: 'qtmultimedia qtnetwork' # <--- ASEGÚRATE DE QUE DIGA ESTO
+          arch: 'win64_msvc2019_64'
+          modules: 'qtmultimedia qtnetwork'
 
       - name: Build OmniumCore
         shell: pwsh
@@ -20,7 +20,7 @@ jobs:
           $dir = $cmakeFile.DirectoryName
           cd "$dir"
           if (Test-Path build) { Remove-Item -Recurse -Force build }
-          # Usamos la ruta de Qt que el robot configuró
+          # Usamos la ruta de Qt que instalamos arriba
           cmake -B build -S . -DCMAKE_PREFIX_PATH="$env:Qt6_DIR"
           cmake --build build --config Release
           
