@@ -28,7 +28,7 @@ jobs:
           cmake -B build -S . -DCMAKE_PREFIX_PATH="$env:Qt6_DIR"
           cmake --build build --config Release
           
-          # ESTO ES LO NUEVO: Copia las DLLs necesarias a la carpeta del EXE
+           # Deployment: Copy necessary DLLs to the executable directory
           cd build/Release
           & "$env:Qt6_DIR/bin/windeployqt.exe" --qmldir ../../ --no-translations --compiler-runtime OmniumCoreLauncher.exe
 
