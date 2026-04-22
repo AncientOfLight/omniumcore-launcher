@@ -6,12 +6,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
           version: '6.5.3'
           arch: 'win64_msvc2019_64'
-          modules: 'qtmultimedia qtnetwork'
+          # Quitamos qtnetwork porque ya viene por defecto
+          modules: 'qtmultimedia' 
 
       - name: Build OmniumCore
         shell: pwsh
@@ -20,7 +26,6 @@ jobs:
           $dir = $cmakeFile.DirectoryName
           cd "$dir"
           if (Test-Path build) { Remove-Item -Recurse -Force build }
-          # Usamos la ruta de Qt que instalamos arriba
           cmake -B build -S . -DCMAKE_PREFIX_PATH="$env:Qt6_DIR"
           cmake --build build --config Release
           
