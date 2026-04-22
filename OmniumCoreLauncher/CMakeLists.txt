@@ -7,21 +7,36 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-# Hacemos que Multimedia y Network sean opcionales para que no detengan la creación del .exe
-find_package(Qt6 REQUIRED COMPONENTS Widgets Gui Core Concurrent)
-find_package(Qt6 OPTIONAL_COMPONENTS Network Multimedia)
+# 1. Quita "OPTIONAL_COMPONENTS". Si faltan, es mejor que CMake se detenga aquí
+# y no intente compilar algo que va a fallar.
+find_package(Qt6 REQUIRED COMPONENTS 
+    Widgets 
+    Gui 
+    Core 
+    Concurrent 
+    Network 
+    Multimedia
+)
 
-file(GLOB_RECURSE SOURCES "src/*.cpp" "main.cpp")
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+# Es mejor no incluir main.cpp en el GLOB si ya lo tienes en la raíz o listarlo aparte
+list(APPEND SOURCES "main.cpp") 
+
 file(GLOB_RECURSE HEADERS "src/*.h")
 
 qt_add_executable(OmniumCoreLauncher ${SOURCES} ${HEADERS} resources/resources.qrc)
 
-target_link_libraries(OmniumCoreLauncher PRIVATE Qt6::Widgets Qt6::Gui Qt6::Core Qt6::Concurrent)
+# 2. Define la versión aquí para que ApiClient.cpp y Updater.cpp no den error C2065
+target_compile_definitions(OmniumCoreLauncher PRIVATE 
+    OMNIUM_VERSION="${PROJECT_VERSION}"
+)
 
-# Solo los unimos si el robot los encontró
-if(Qt6Network_FOUND)
-    target_link_libraries(OmniumCoreLauncher PRIVATE Qt6::Network)
-endif()
-if(Qt6Multimedia_FOUND)
-    target_link_libraries(OmniumCoreLauncher PRIVATE Qt6::Multimedia)
-endif()
+# 3. Enlaza todas las librerías necesarias
+target_link_libraries(OmniumCoreLauncher PRIVATE 
+    Qt6::Widgets 
+    Qt6::Gui 
+    Qt6::Core 
+    Qt6::Concurrent 
+    Qt6::Network 
+    Qt6::Multimedia
+)
