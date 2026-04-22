@@ -16,13 +16,13 @@ find_package(Qt6 REQUIRED COMPONENTS
     Multimedia
 )
 
-# 1. Aquí está el cambio: solo buscamos dentro de la carpeta 'src' 
-# para no agarrar archivos basura de carpetas temporales.
+# 1. Source discovery: Scan only the 'src' directory 
+# to avoid including temporary or build files.
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 file(GLOB_RECURSE HEADERS "src/*.h")
 
-# 2. Si tu main.cpp está afuera de 'src', lo añadimos manualmente. 
-# Si ya está dentro de 'src', CMake lo ignorará si es un duplicado.
+# 2. Entry point check: Manually add main.cpp if it's in the root directory. 
+# If already in 'src', CMake will handle duplicates.
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp")
     list(APPEND SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp")
 endif()
