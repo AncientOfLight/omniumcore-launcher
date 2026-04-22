@@ -7,8 +7,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-# 1. Quita "OPTIONAL_COMPONENTS". Si faltan, es mejor que CMake se detenga aquí
-# y no intente compilar algo que va a fallar.
+# Buscamos Qt6 y sus módulos
 find_package(Qt6 REQUIRED COMPONENTS 
     Widgets 
     Gui 
@@ -18,20 +17,19 @@ find_package(Qt6 REQUIRED COMPONENTS
     Multimedia
 )
 
-file(GLOB_RECURSE SOURCES "src/*.cpp")
-# Es mejor no incluir main.cpp en el GLOB si ya lo tienes en la raíz o listarlo aparte
-list(APPEND SOURCES "main.cpp") 
+# Buscamos TODOS los archivos .cpp y .h dentro de src y sus subcarpetas
+file(GLOB_RECURSE SOURCES "src/*.cpp" "*.cpp")
+file(GLOB_RECURSE HEADERS "src/*.h" "*.h")
 
-file(GLOB_RECURSE HEADERS "src/*.h")
-
+# Creamos el ejecutable
 qt_add_executable(OmniumCoreLauncher ${SOURCES} ${HEADERS} resources/resources.qrc)
 
-# 2. Define la versión aquí para que ApiClient.cpp y Updater.cpp no den error C2065
+# Arreglamos el error de OMNIUM_VERSION
 target_compile_definitions(OmniumCoreLauncher PRIVATE 
     OMNIUM_VERSION="${PROJECT_VERSION}"
 )
 
-# 3. Enlaza todas las librerías necesarias
+# Enlazamos las librerías
 target_link_libraries(OmniumCoreLauncher PRIVATE 
     Qt6::Widgets 
     Qt6::Gui 
