@@ -1,0 +1,39 @@
+name: Build OmniumCore Windows
+on: [push]
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: '6.5.3'
+          arch: 'win64_msvc2019_64'
+          modules: 'qtmultimedia'
+
+      - name: Build OmniumCore
+        shell: pwsh
+        run: |
+          $cmakeFile = Get-ChildItem -Filter CMakeLists.txt -Recurse | Select-Object -First 1
+          $dir = $cmakeFile.DirectoryName
+          cd "$dir"
+          if (Test-Path build) { Remove-Item -Recurse -Force build }
+          cmake -B build -S . -DCMAKE_PREFIX_PATH="$env:Qt6_DIR"
+          cmake --build build --config Release
+          
+           # Deployment: Copy necessary DLLs to the executable directory
+          cd build/Release
+          & "$env:Qt6_DIR/bin/windeployqt.exe" --qmldir ../../ --no-translations --compiler-runtime OmniumCoreLauncher.exe
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: OmniumCore-Launcher-Full
+          path: "**/build/Release/"
