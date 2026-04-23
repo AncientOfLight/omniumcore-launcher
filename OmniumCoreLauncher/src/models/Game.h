@@ -8,7 +8,6 @@
 namespace omnium {
 
 enum class Platform {
-    Unknown,
     Steam,
     EA,
     Epic,
@@ -16,7 +15,8 @@ enum class Platform {
     Ubisoft,
     GOG,
     Amazon,
-    Riot
+    Riot,
+    Others
 };
 
 inline QString platformToString(Platform p) {
@@ -29,8 +29,18 @@ inline QString platformToString(Platform p) {
         case Platform::GOG:       return QStringLiteral("GOG");
         case Platform::Amazon:    return QStringLiteral("Amazon");
         case Platform::Riot:      return QStringLiteral("Riot");
-        default:                  return QStringLiteral("Unknown");
+        case Platform::Others:    return QStringLiteral("Others");
     }
+    return QStringLiteral("Others");
+}
+
+// Canonical list of every platform displayed in the UI.
+inline QList<Platform> allPlatforms() {
+    return {
+        Platform::Steam, Platform::EA, Platform::Epic, Platform::Microsoft,
+        Platform::Ubisoft, Platform::GOG, Platform::Amazon, Platform::Riot,
+        Platform::Others
+    };
 }
 
 struct Game {
@@ -38,7 +48,7 @@ struct Game {
     QString  title;          // Display name
     QString  executablePath; // Absolute path to .exe on Windows
     QString  installDir;     // Folder where the game lives
-    Platform platform = Platform::Unknown;
+    Platform platform = Platform::Others;
 
     // Metadata (filled in by ApiClient — RAWG/IGDB)
     QString     coverUrl;

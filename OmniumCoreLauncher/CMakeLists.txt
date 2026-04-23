@@ -27,8 +27,8 @@ set(PROJECT_SOURCES
     src/FlowLayout.h
     src/GameCard.cpp
     src/GameCard.h
-    src/GameDetailsDialog.cpp
-    src/GameDetailsDialog.h
+    src/GameDetailsView.cpp
+    src/GameDetailsView.h
     src/GameScanner.cpp
     src/GameScanner.h
     src/ApiClient.cpp

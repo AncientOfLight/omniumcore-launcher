@@ -218,3 +218,149 @@ QScrollBar::handle:vertical {
 QScrollBar::handle:vertical:hover { background: #7c5cff; }
 QScrollBar::add-line:vertical,
 QScrollBar::sub-line:vertical { height: 0; }
+
+/* =====================================================================
+   Refactor additions: in-window navigation, menu button, banner
+   ===================================================================== */
+
+QToolButton#SidebarToggle, QToolButton#MenuButton {
+    background: #1a1d2e;
+    color: #e6e8f2;
+    border: 1px solid #2a2f4a;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-weight: 600;
+}
+QToolButton#SidebarToggle:hover, QToolButton#MenuButton:hover {
+    background: #232841;
+    border-color: #7c5cff;
+}
+QToolButton#MenuButton::menu-indicator { image: none; width: 0; }
+
+QMenu#MainMenu {
+    background: #15182a;
+    border: 1px solid #2a2f4a;
+    padding: 6px;
+    color: #e6e8f2;
+}
+QMenu#MainMenu::item {
+    padding: 8px 24px;
+    border-radius: 6px;
+}
+QMenu#MainMenu::item:selected {
+    background: #2a2f4a;
+    color: #ffffff;
+}
+QMenu#MainMenu::separator {
+    height: 1px;
+    background: #2a2f4a;
+    margin: 6px 4px;
+}
+
+QLabel#PageTitle {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+QFrame#UpdateBanner {
+    background: #2a1f4a;
+    border-bottom: 1px solid #7c5cff;
+}
+QLabel#UpdateBannerText {
+    color: #e6e8f2;
+    font-weight: 600;
+}
+
+QStackedWidget#PageStack { background: #0d1020; }
+
+/* Settings & About pages */
+QLabel#SectionHeading {
+    font-size: 24px;
+    font-weight: 800;
+    color: #ffffff;
+}
+QFrame#SettingsCard {
+    background: #15182a;
+    border: 1px solid #2a2f4a;
+    border-radius: 12px;
+}
+QLabel#SettingsCardTitle {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+}
+QLabel#SettingsHint {
+    color: #9ea3c0;
+    font-size: 13px;
+}
+QListWidget#FoldersList {
+    background: #0d1020;
+    border: 1px solid #2a2f4a;
+    border-radius: 8px;
+    padding: 4px;
+}
+
+/* GameDetailsView */
+QWidget#GameDetailsView { background: #0d1020; }
+QLabel#DetailsCover {
+    background: #15182a;
+    border: 1px solid #2a2f4a;
+    border-radius: 12px;
+    color: #6a6f90;
+}
+QLabel#DetailsTitle {
+    font-size: 28px;
+    font-weight: 800;
+    color: #ffffff;
+}
+QLabel#MetaKey {
+    color: #9ea3c0;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+QLabel#MetaValue {
+    color: #e6e8f2;
+    font-size: 14px;
+}
+QToolButton#SynopsisToggle {
+    background: transparent;
+    color: #c8ccea;
+    border: none;
+    font-weight: 700;
+    padding: 4px 0;
+}
+QToolButton#SynopsisToggle:hover { color: #ffffff; }
+QFrame#SynopsisBox {
+    background: #15182a;
+    border: 1px solid #2a2f4a;
+    border-radius: 10px;
+}
+QTextBrowser#SynopsisText {
+    background: transparent;
+    border: none;
+    color: #e6e8f2;
+    padding: 12px;
+}
+
+QLabel#PlatformRow {
+    padding: 4px 0;
+    font-weight: 600;
+}
+QFrame#SidebarDivider {
+    color: #2a2f4a;
+    background: #2a2f4a;
+    max-height: 1px;
+}
+QLabel#SidebarSection {
+    color: #6a6f90;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+}
+QLabel#VersionLabel {
+    color: #6a6f90;
+    font-size: 11px;
+}

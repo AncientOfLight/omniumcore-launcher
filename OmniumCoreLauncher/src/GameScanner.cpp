@@ -72,7 +72,7 @@ Platform GameScanner::inferPlatformFromPath(const QString& path) const {
     if (lower.contains(QStringLiteral("gog")))                   return Platform::GOG;
     if (lower.contains(QStringLiteral("amazon games")))          return Platform::Amazon;
     if (lower.contains(QStringLiteral("riot")))                  return Platform::Riot;
-    return Platform::Unknown;
+    return Platform::Others;
 }
 
 bool GameScanner::looksLikeGameExecutable(const QString& fileName) const {
@@ -128,7 +128,7 @@ void GameScanner::scanDirectory(const QString& root, Platform hint, QVector<Game
         g.title          = gameDir.fileName();
         g.installDir     = gameDir.absoluteFilePath();
         g.executablePath = bestExe;
-        g.platform       = (hint == Platform::Unknown) ? inferPlatformFromPath(bestExe) : hint;
+        g.platform       = (hint == Platform::Others) ? inferPlatformFromPath(bestExe) : hint;
         g.id = QString::fromLatin1(
             QCryptographicHash::hash(bestExe.toUtf8(), QCryptographicHash::Sha1).toHex());
 
@@ -188,7 +188,7 @@ QVector<Game> GameScanner::scanRegistry() {
                 g.title      = displayName;
                 g.installDir = installPath;
                 g.platform   = inferPlatformFromPath(installPath);
-                if (g.platform == Platform::Unknown && publisher.toLower().contains("ubisoft"))
+                if (g.platform == Platform::Others && publisher.toLower().contains("ubisoft"))
                     g.platform = Platform::Ubisoft;
                 g.id = QString::fromLatin1(
                     QCryptographicHash::hash(installPath.toUtf8(),

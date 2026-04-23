@@ -12,8 +12,9 @@ QIcon iconFor(Platform p) {
         case Platform::GOG:       return QIcon(QStringLiteral(":/icons/gog.svg"));
         case Platform::Amazon:    return QIcon(QStringLiteral(":/icons/amazon.svg"));
         case Platform::Riot:      return QIcon(QStringLiteral(":/icons/riot.svg"));
-        default:                  return QIcon(QStringLiteral(":/icons/unknown.svg"));
+        case Platform::Others:    return QIcon(QStringLiteral(":/icons/unknown.svg"));
     }
+    return QIcon(QStringLiteral(":/icons/unknown.svg"));
 }
 
 QString badgeColorFor(Platform p) {
@@ -26,8 +27,9 @@ QString badgeColorFor(Platform p) {
         case Platform::GOG:       return QStringLiteral("#86328a");
         case Platform::Amazon:    return QStringLiteral("#ff9900");
         case Platform::Riot:      return QStringLiteral("#d13639");
-        default:                  return QStringLiteral("#3a3f5a");
+        case Platform::Others:    return QStringLiteral("#3a3f5a");
     }
+    return QStringLiteral("#3a3f5a");
 }
 
 } // namespace omnium::PlatformIcons

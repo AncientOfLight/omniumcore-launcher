@@ -1,4 +1,4 @@
-#include "GameDetailsDialog.h"
+#include "GameDetailsView.h"
 #include "PlatformIcons.h"
 
 #include <QFrame>
@@ -9,37 +9,45 @@
 #include <QTextBrowser>
 #include <QToolButton>
 #include <QVBoxLayout>
-#include <QPropertyAnimation>
 
 namespace omnium {
 
-GameDetailsDialog::GameDetailsDialog(const Game& game, QWidget* parent)
-    : QDialog(parent), m_game(game) {
-    setObjectName(QStringLiteral("GameDetailsDialog"));
-    setWindowTitle(game.title);
-    setModal(true);
-    resize(820, 560);
+GameDetailsView::GameDetailsView(QWidget* parent) : QWidget(parent) {
+    setObjectName(QStringLiteral("GameDetailsView"));
     buildUi();
-    applyGameData();
 }
 
-void GameDetailsDialog::buildUi() {
-    auto* root = new QHBoxLayout(this);
-    root->setContentsMargins(24, 24, 24, 24);
+void GameDetailsView::buildUi() {
+    auto* root = new QVBoxLayout(this);
+    root->setContentsMargins(28, 24, 28, 24);
     root->setSpacing(20);
 
-    // ----- Left: cover -----
+    // ----- Top bar with the Back button -----
+    auto* topBar = new QHBoxLayout;
+    topBar->setSpacing(12);
+
+    m_backBtn = new QPushButton(QStringLiteral("←  Back to library"), this);
+    m_backBtn->setObjectName(QStringLiteral("GhostButton"));
+    m_backBtn->setCursor(Qt::PointingHandCursor);
+    connect(m_backBtn, &QPushButton::clicked, this, &GameDetailsView::backRequested);
+    topBar->addWidget(m_backBtn, 0, Qt::AlignLeft);
+    topBar->addStretch(1);
+    root->addLayout(topBar);
+
+    // ----- Body: cover on the left, info column on the right -----
+    auto* body = new QHBoxLayout;
+    body->setSpacing(24);
+
     m_cover = new QLabel(this);
     m_cover->setObjectName(QStringLiteral("DetailsCover"));
-    m_cover->setFixedSize(280, 380);
+    m_cover->setFixedSize(320, 440);
     m_cover->setAlignment(Qt::AlignCenter);
     m_cover->setText(QStringLiteral("No cover"));
-    root->addWidget(m_cover, 0, Qt::AlignTop);
+    body->addWidget(m_cover, 0, Qt::AlignTop);
 
-    // ----- Right: info column -----
-    auto* col  = new QVBoxLayout;
-    col->setSpacing(12);
-    root->addLayout(col, 1);
+    auto* col = new QVBoxLayout;
+    col->setSpacing(14);
+    body->addLayout(col, 1);
 
     m_title = new QLabel(this);
     m_title->setObjectName(QStringLiteral("DetailsTitle"));
@@ -81,16 +89,16 @@ void GameDetailsDialog::buildUi() {
     grid->addWidget(m_genres,                                 1, 1);
     grid->addWidget(makeKey(QStringLiteral("Rating")),        2, 0);
     grid->addWidget(m_rating,                                 2, 1);
-
     col->addLayout(grid);
 
-    // ----- Expandable synopsis (collapsible) -----
+    // ----- Collapsible synopsis -----
     m_synopsisToggle = new QToolButton(this);
     m_synopsisToggle->setObjectName(QStringLiteral("SynopsisToggle"));
     m_synopsisToggle->setText(QStringLiteral("▾  Synopsis"));
     m_synopsisToggle->setCheckable(true);
     m_synopsisToggle->setChecked(true);
     m_synopsisToggle->setToolButtonStyle(Qt::ToolButtonTextOnly);
+    m_synopsisToggle->setCursor(Qt::PointingHandCursor);
     col->addWidget(m_synopsisToggle, 0, Qt::AlignLeft);
 
     m_synopsisBox = new QFrame(this);
@@ -109,21 +117,29 @@ void GameDetailsDialog::buildUi() {
                                        : QStringLiteral("▸  Synopsis"));
     });
 
-    // ----- Actions -----
+    // ----- Action bar -----
     auto* actions = new QHBoxLayout;
     actions->addStretch(1);
     m_launchBtn = new QPushButton(QStringLiteral("▶  Play"), this);
     m_launchBtn->setObjectName(QStringLiteral("PrimaryButton"));
     m_launchBtn->setMinimumHeight(40);
+    m_launchBtn->setCursor(Qt::PointingHandCursor);
     actions->addWidget(m_launchBtn);
     col->addLayout(actions);
 
     connect(m_launchBtn, &QPushButton::clicked, this, [this] {
         emit launchRequested(m_game);
     });
+
+    root->addLayout(body, 1);
 }
 
-void GameDetailsDialog::applyGameData() {
+void GameDetailsView::setGame(const Game& g) {
+    m_game = g;
+    applyGameData();
+}
+
+void GameDetailsView::applyGameData() {
     m_title->setText(m_game.title);
     m_platform->setText(QStringLiteral("  %1  ").arg(platformToString(m_game.platform)));
     m_platform->setStyleSheet(
@@ -145,16 +161,11 @@ void GameDetailsDialog::applyGameData() {
                              : m_game.synopsis);
 }
 
-void GameDetailsDialog::setCover(const QPixmap& pix) {
-    if (pix.isNull()) return;
+void GameDetailsView::setCover(const QPixmap& pix) {
+    if (pix.isNull() || !m_cover) return;
     m_cover->setPixmap(pix.scaled(m_cover->size(),
                                   Qt::KeepAspectRatioByExpanding,
                                   Qt::SmoothTransformation));
-}
-
-void GameDetailsDialog::setGame(const Game& g) {
-    m_game = g;
-    applyGameData();
 }
 
 } // namespace omnium
